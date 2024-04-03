@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Logo" width="32" height="32">
+    <h1>tabs heap</h1>
+  </header>
+
+  <div class="section section__tabs-count">
+    <div>
+      <span id="tabs-count"></span>
+    </div>
+    <span class="text-m upper">tabs open</span>
+  </div>
+
+  <div class="section section__tabs-oldest">
+    <button id="oldest-tab-button" title="Click to go to the tab" style="display: flex; gap: .5rem; align-items: center;">
+      <img id="oldest-tab-icon" alt="Tab icon" width="32" height="32">
+      <span id="oldest-tab-title"></span>
+    </button>
+    <span class="text-m upper" title="The oldest accessed tab">the oldest tab</span>
+  </div>
+
+  <div class="section section__tabs-popular">
+    <div id="tabs-popular"></div>
+    <span class="text-m upper">top 3</span>
+  </div>
+
+  <div class="actions">
+    <button class="btn">Close all</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

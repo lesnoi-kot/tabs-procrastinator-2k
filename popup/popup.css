@@ -1,0 +1,142 @@
+* {
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: aliceblue;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 300px;
+  height: 500px;
+  background: #f9f9fb;
+
+  color: white;
+  --color-gray: #353531;
+  --color-orange: #FF9505;
+  --color-azul: #016FB9;
+  --color-flame: #EC4E20;
+}
+
+img {
+  display: block;
+}
+
+button {
+  all: unset;
+  outline: revert;
+  cursor: pointer;
+}
+
+button:hover {
+  text-decoration: underline;
+}
+
+header {
+  display: flex;
+  padding: 0 1rem;
+  align-items: center;
+  height: 40px;
+  background: var(--color-gray);
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-left: auto;
+  letter-spacing: 2%;
+  font-weight: normal;
+  color: #f9f9fb;
+  text-align: right;
+}
+
+.section {
+  display: flex;
+  gap: 1.25rem;
+  flex-direction: column;
+  place-items: center;
+  text-align: center;
+  padding: 1rem .5rem;
+}
+
+.section__tabs-count {
+  background: var(--color-azul);
+}
+
+.section__tabs-oldest {
+  background: var(--color-orange);
+}
+
+.section__tabs-oldest > div {
+  display: flex;
+}
+
+.section__tabs-popular {
+  background: var(--color-flame);
+}
+
+.actions {
+  padding: 1rem;
+}
+
+.btn {
+  background: #FF9505;
+  border-radius: 4px;
+  padding: .75rem .5rem;
+}
+
+.btn:hover {
+  background: #ff9c12;
+}
+
+#tabs-count {
+  font-size: 2.5rem;
+}
+
+#oldest-tab-title {
+  font-size: 1.25rem;
+}
+
+#tabs-popular {
+  display: flex;
+  text-align: center;
+  color: #EFEFEF;
+  gap: 2rem;
+  justify-items: center;
+}
+
+#tabs-popular > div {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  align-items: center;
+}
+
+/* Utils  */
+.upper {
+  text-transform: uppercase;
+}
+
+.text-regular {
+  font-size: 1rem;
+}
+
+.text-m {
+  font-size: 1.25rem;
+}
+
+.text-l {
+  font-size: 1.5rem;
+}
+
+.lh-1\.25 {
+  line-height: 1.25;
+}
+
+.lh-1\.5 {
+  line-height: 1.5;
+}
