@@ -1,12 +1,27 @@
-document.addEventListener("DOMContentLoaded", render);
+const DEFAULT_FAVICON_URL = "stub.png";
 
-async function render() {
-  const tabs = await browser.tabs.query({});
-  const oldestTab = getOldestTab(tabs);
+document.addEventListener("DOMContentLoaded", renderAll);
+browser.tabs.onRemoved.addListener(renderAll);
 
+async function renderAll() {
+  const tabs = await getAllTabs();
+
+  renderOldestTab(tabs);
   UI.updateTabsCountValue(tabs);
-  UI.updateOldestTab(oldestTab);
   UI.updateTop3Tabs(tabs);
+}
+
+async function goToTab(tabId) {
+  return browser.tabs.update(tabId, { active: true });
+}
+
+function renderOldestTab(tabs) {
+  const oldestTab = getOldestTab(tabs);
+  UI.updateOldestTab(oldestTab);
+}
+
+async function getAllTabs() {
+  return await browser.tabs.query({ windowId: browser.windows.WINDOW_ID_CURRENT });
 }
 
 function groupByHost(tabs) {
@@ -41,6 +56,66 @@ function getOldestTab(tabs) {
   return oldestTab;
 }
 
+/* Action handlers */
+async function closeAllTabs() {
+  const tabs = await getAllTabs();
+  await browser.tabs.remove(tabs.map(tab => tab.id));
+  await renderAll();
+}
+
+async function closeTheOldestTab() {
+  const tabs = await getAllTabs();
+  const oldestTab = getOldestTab(tabs);
+
+  if (oldestTab) {
+    await browser.tabs.remove(oldestTab.id);
+    await renderAll();
+  }
+}
+
+async function bringTheOldestTab() {
+  const tabs = await getAllTabs();
+  const oldestTab = getOldestTab(tabs);
+
+  if (oldestTab) {
+    await browser.tabs.move(oldestTab.id, { index: -1 });
+    await goToTab(oldestTab.id);
+    await renderAll();
+  }
+}
+
+async function groupTabs() {
+  const tabs = await getAllTabs();
+  const unpinnedTabs = tabs.filter(tab => !tab.pinned);
+  const groups = groupByHost(unpinnedTabs);
+
+  let index = tabs.length - unpinnedTabs.length; // Ignore pinned tabs
+
+  for (const [_, groupedTabs] of groups) {
+    await browser.tabs.move(groupedTabs.map(tab => tab.id), {
+      index,
+      windowId: browser.windows.WINDOW_ID_CURRENT,
+    });
+    index += groupedTabs.length;
+  }
+}
+
+async function shuffleTabs() {
+  const tabs = await getAllTabs();
+  const unpinnedTabs = tabs.filter(tab => !tab.pinned);
+
+  await browser.tabs.move(
+    unpinnedTabs
+      .map(tab => tab.id)
+      .sort(() => Math.random() - 0.5),
+    {
+      index: tabs.length - unpinnedTabs.length,
+      windowId: browser.windows.WINDOW_ID_CURRENT,
+    },
+  );
+}
+
+/* UI syncs */
 class UI {
   static tabsCountEl = document.getElementById("tabs-count");
   static oldestTabIconEl = document.getElementById("oldest-tab-icon");
@@ -52,14 +127,18 @@ class UI {
   }
 
   static updateOldestTab(tab) {
-    UI.oldestTabIconEl.src = tab.favIconUrl;
+    UI.oldestTabIconEl.src = tab.favIconUrl ?? DEFAULT_FAVICON_URL;
     UI.oldestTabTitleEl.innerHTML = `
-      <b class="lh-1.25">${tab.title}</b><br>
+      <b class="lh-1.25" style="overflow-wrap: anywhere;">${tab.title}</b><br>
+      <span class="lh-1.25 text-regular">from ${extractHost(tab.url)}</span><br>
       <span class="lh-1.25 text-regular">accessed at ${formatTabDate(tab)}</span>
     `;
 
     document.getElementById("oldest-tab-button").onclick = async () => {
-      await browser.tabs.update(tab.id, { active: true });
+      await Promise.all([
+        browser.tabs.update(tab.id, { active: true }),
+        browser.tabs.query({}).then(renderOldestTab),
+      ]);
     };
   }
 
@@ -74,8 +153,8 @@ class UI {
       if (tab) {
         UI.tabsPopularEl.innerHTML += (
           `<div title="${groups[i][0]}">
-            <img width="32" height="32" src="${tab.favIconUrl}">
-            <span class="text-m">${groups[i][1].length}</span>
+            <img width="32" height="32" src="${tab.favIconUrl ?? DEFAULT_FAVICON_URL}">
+            <b class="text-m">${groups[i][1].length}</b>
           </div>`
         );
       }
@@ -83,10 +162,21 @@ class UI {
   }
 }
 
+document.getElementById('btn-close-oldest').onclick = closeTheOldestTab;
+document.getElementById('btn-bring-oldest').onclick = bringTheOldestTab;
+
+document.getElementById('btn-group').onclick = groupTabs;
+document.getElementById('btn-randomize').onclick = shuffleTabs;
+document.getElementById('btn-close-all').onclick = closeAllTabs;
+
 /* Utils */
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function formatTabDate(tab) {
   const date = new Date(tab.lastAccessed);
-  return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function extractHost(url) {
+  return new URL(url).origin;
 }

@@ -13,8 +13,7 @@ body {
   margin: 0;
   padding: 0;
   width: 300px;
-  height: 500px;
-  background: #f9f9fb;
+  background: #eeeeee;
 
   color: white;
   --color-gray: #353531;
@@ -46,7 +45,7 @@ header {
 }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-left: auto;
   letter-spacing: 2%;
   font-weight: normal;
@@ -56,10 +55,8 @@ h1 {
 
 .section {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.35rem;
   flex-direction: column;
-  place-items: center;
-  text-align: center;
   padding: 1rem .5rem;
 }
 
@@ -81,6 +78,10 @@ h1 {
 
 .actions {
   padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem 1rem;
+  background: var(--color-gray);
 }
 
 .btn {
@@ -93,12 +94,21 @@ h1 {
   background: #ff9c12;
 }
 
+.icon-btn {
+  padding: .25rem;
+}
+
 #tabs-count {
   font-size: 2.5rem;
 }
 
 #oldest-tab-title {
   font-size: 1.25rem;
+}
+
+#oldest-tab-button {
+  display: flex;
+  gap: .75rem;
 }
 
 #tabs-popular {
@@ -139,4 +149,12 @@ h1 {
 
 .lh-1\.5 {
   line-height: 1.5;
+}
+
+.center {
+  place-items: center;
+}
+
+.text-center {
+  text-align: center;
 }
